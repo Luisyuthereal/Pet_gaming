@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typewriting Training</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fbeee6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .typing-container {
+            width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .word-box {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .input-box {
+            width: 100%;
+            padding: 12px;
+            font-size: 20px;
+            border: 2px solid black;
+            border-radius: 5px;
+            text-align: center;
+            outline: none;
+            display: block;
+            margin: 0 auto; /* Centers the type box */
+        }
+        .monkey {
+            width: 150px;
+            margin-top: 15px;
+        }
+        .button {
+            margin: 10px;
+            padding: 12px 25px;
+            font-size: 18px;
+            background-color: #ffcc99;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #ff9966;
+        }
+        .bottom-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        let gameTime = 30;
+        let timeLeft;
+        let timerInterval;
+        let correctWords = 0;
+        let typingActive = false;
+
+        function setGameTime(time) {
+            gameTime = time;
+            document.getElementById('timer-display').innerText = `Time Left: ${gameTime}s`;
+        }
+
+        function startTypingTest() {
+            if (typingActive) return;
+            typingActive = true;
+            correctWords = 0;
+            timeLeft = gameTime;
+
+            document.getElementById('instructions').innerText = "Type the word displayed below as fast as you can!";
+            document.getElementById('result').innerText = "";
+            document.getElementById('timer-display').innerText = `Time Left: ${timeLeft}s`;
+            document.getElementById('word-display').innerText = getRandomWord();
+            let inputBox = document.getElementById('typing-input');
+            inputBox.value = "";
+            inputBox.disabled = false;
+            inputBox.focus();
+            changeMonkey("dancing-monkey.png");
+
+            timerInterval = setInterval(updateTimer, 1000);
+            setTimeout(endTypingTest, gameTime * 1000);
+        }
+
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById('timer-display').innerText = `Time Left: ${timeLeft}s`;
+            }
+        }
+
+        function getRandomWord() {
+let randomWords = [
+    "paws", "furball", "meow", "bark", "whiskers", "tail", "puppy", "kitten", "fetch", "nap", "sniff", "growl",
+    "chew", "purr", "woof", "leash", "collar", "treat", "scratch", "yawn", "nuzzle", "cuddle", "fur", "snuggle",
+    "wag", "drool", "howl", "chirp", "claw", "whimper", "furry", "hiss", "lick", "obedient", "gentle", "loyal",
+    "muzzle", "squeak", "pounce", "scamper", "scratch", "zoomies", "binky", "slither", "feathers", "groom",
+    "trainer", "obedience", "kennel", "litter", "whistle", "canine", "feline", "herding", "aquarium", "perch",
+    "hutch", "burrow", "reptile", "rodent", "nibble", "wagging", "panting", "tricks", "jump", "roll", "fluff",
+    "scratchpost", "hay", "tank", "gallop", "sniffing", "hamster", "goldfish", "terrier", "poodle", "shepherd",
+    "mastiff", "parrot", "budgie", "pony", "guinea", "chinchilla", "hedgehog", "ferret", "alpaca", "gecko",
+    "iguana", "newt", "tortoise", "snake", "turtle", "fishbowl", "harness", "nest", "cage", "barn", "stall",
+    "doghouse", "catnip", "carrot", "wings", "quack", "hoof", "mane", "saddle", "treats", "training", "companionship"
+];
+            return randomWords[Math.floor(Math.random() * randomWords.length)];
+        }
+
+        function checkTyping(event) {
+            let typedWord = event.target.value.trim();
+            let displayedWord = document.getElementById('word-display').innerText;
+
+            if (typedWord === displayedWord) {
+                correctWords++;
+                document.getElementById('word-display').innerText = getRandomWord();
+                event.target.value = "";
+            }
+        }
+
+        function endTypingTest() {
+            typingActive = false;
+            clearInterval(timerInterval);
+            document.getElementById('typing-input').disabled = true;
+
+            let wpm = Math.round((correctWords / gameTime) * 60);
+            document.getElementById("result").innerText = `Game Over! Words Typed: ${correctWords} | WPM: ${wpm}`;
+            changeMonkey("normal-monkey.jpg");
+        }
+
+        function changeMonkey(image) {
+            document.getElementById('monkey-image').src = image;
+        }
+
+        function detectTyping() {
+            if (typingActive) {
+                changeMonkey("dancing-monkey.png");
+            }
+        }
+
+        function detectStopTyping() {
+            if (typingActive) {
+                setTimeout(() => {
+                    let inputValue = document.getElementById('typing-input').value;
+                    if (inputValue.trim() === "") {
+                        changeMonkey("normal-monkey.jpg");
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Typewriting Training</h2>
+    <p id="instructions">Select a time limit and press "Start" to begin.</p>
+
+    <div>
+        <button class="button" onclick="setGameTime(10)">10s</button>
+        <button class="button" onclick="setGameTime(15)">15s</button>
+        <button class="button" onclick="setGameTime(30)">30s</button>
+        <button class="button" onclick="setGameTime(60)">1m</button>
+    </div>
+    <p id="timer-display">Time Left: 30s</p>
+
+    <div class="typing-container">
+        <p class="word-box" id="word-display">Press Start</p>
+        <input type="text" id="typing-input" class="input-box" oninput="checkTyping(event); detectTyping();" onblur="detectStopTyping()" disabled>
+        <br>
+        <img id="monkey-image" class="monkey" src="normal-monkey.jpg" alt="Monkey">
+    </div>
+
+    <button class="button" onclick="startTypingTest()">Start Typing Test</button>
+    <p id="result"></p>
+
+    <div class="bottom-panel">
+        <button class="button" onclick="location.href='Pet_Gamingfication.html'">Home</button>
+        <button class="button" onclick="location.href='reaction-time.html'">Reaction Time</button>
+        <button class="button" onclick="location.href='aim-train.html'">Aim Train</button>
+        <button class="button" onclick="location.href='memorization.html'">Memorization</button>
+        <button class="button" onclick="location.href='exit.html'">Exit</button>
+    </div>
+</body>
+</html>

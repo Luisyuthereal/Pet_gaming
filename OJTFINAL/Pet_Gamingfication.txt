@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet-Themed Training</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fbeee6;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            gap: 20px;
+            padding-top: 50px;
+        }
+        .button {
+            padding: 20px;
+            font-size: 24px;
+            background-color: #ffcc99;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 300px;
+        }
+        .button:hover {
+            background-color: #ff9966;
+        }
+        .content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            width: 80%;
+        }
+        .dog-image {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+    <script>
+        function showContent(section) {
+            document.querySelectorAll('.content').forEach(div => div.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+        }
+
+        let startTime;
+        function startReactionTest() {
+            document.getElementById('dog-image').src = 'sad-dog.png';
+            document.getElementById('reaction-button').disabled = true;
+            document.getElementById('result').innerText = "";
+            
+            setTimeout(() => {
+                document.getElementById('dog-image').src = 'happy-dog.png';
+                document.getElementById('reaction-button').disabled = false;
+                startTime = Date.now();
+            }, Math.random() * 3000 + 2000);
+        }
+
+        function stopReactionTest() {
+            let reactionTime = Date.now() - startTime;
+            document.getElementById('result').innerText = `Your reaction time: ${reactionTime} ms`;
+            document.getElementById('reaction-button').disabled = true;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <button class="button" onclick="showContent('reaction-time')">Reaction Time Test</button>
+        <button class="button" onclick="showContent('aim-train')">Aim Train</button>
+        <button class="button" onclick="showContent('typewriting')">Typewriting Training</button>
+        <button class="button" onclick="showContent('memorization')">Memorization</button>
+        <button class="button" onclick="showContent('exit')">Exit</button>
+    </div>
+    
+    <div id="reaction-time" class="content">
+        <h2>Reaction Time Test</h2>
+        <p>Wait for the sad dog to smile, then click the button as fast as you can!</p>
+        <img id="dog-image" class="dog-image" src="sad-dog.png" alt="Sad Dog">
+        <br>
+        <button class="button" onclick="startReactionTest()">Start Test</button>
+        <button id="reaction-button" class="button" onclick="stopReactionTest()" disabled>Click when the dog smiles!</button>
+        <p id="result"></p>
+    </div>
+    <div id="aim-train" class="content">
+        <h2>Aim Training</h2>
+        <p>Improve your aiming accuracy with this training exercise.</p>
+    </div>
+    <div id="typewriting" class="content">
+        <h2>Typewriting Training</h2>
+        <p>Enhance your typing speed and accuracy.</p>
+    </div>
+    <div id="memorization" class="content">
+        <h2>Memorization</h2>
+        <p>Sharpen your memory with this training.</p>
+    </div>
+    <div id="exit" class="content">
+        <h2>Exit</h2>
+        <p>Thanks for visiting! Come back soon.</p>
+    </div>
+</body>
+</html>

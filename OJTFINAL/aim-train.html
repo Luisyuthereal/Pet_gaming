@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aim Training</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fbeee6;
+            margin: 0;
+            padding: 20px;
+        }
+        .game-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background: white;
+            border: 2px solid black;
+            margin: 20px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .cat {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffcc99;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #ff9966;
+        }
+        .bottom-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+    <script>
+        let gameTime = 30; // Default 30 seconds
+        let timeLeft;
+        let totalClicks = 0;
+        let reactionTimes = [];
+        let gameInterval;
+        let timerInterval;
+        let gameActive = false;
+        let currentCat = null;
+
+        function setGameTime(time) {
+            gameTime = time;
+            document.getElementById('timer-display').innerText = `Time Left: ${gameTime}s`;
+        }
+
+        function startGame() {
+            if (gameActive) return;
+            gameActive = true;
+            totalClicks = 0;
+            reactionTimes = [];
+            timeLeft = gameTime;
+
+            document.getElementById("result").innerText = "";
+            document.getElementById('timer-display').innerText = `Time Left: ${timeLeft}s`;
+
+            spawnCat();
+            gameInterval = setTimeout(endGame, gameTime * 1000);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById('timer-display').innerText = `Time Left: ${timeLeft}s`;
+            } else {
+                clearInterval(timerInterval);
+            }
+        }
+
+        function spawnCat() {
+            if (!gameActive) return;
+
+            let gameBox = document.querySelector('.game-container');
+            if (currentCat) currentCat.remove(); // Remove any existing cat
+
+            let cat = document.createElement('img');
+            cat.src = 'normal-cat.webp';  // Correct file format
+            cat.classList.add('cat');
+
+            let x = Math.random() * (gameBox.clientWidth - 80);
+            let y = Math.random() * (gameBox.clientHeight - 80);
+            cat.style.left = `${x}px`;
+            cat.style.top = `${y}px`;
+
+            cat.onclick = () => catClicked(cat);
+            gameBox.appendChild(cat);
+            currentCat = cat;
+        }
+
+        function catClicked(cat) {
+            if (!gameActive || cat.dataset.clicked === "true") return;
+
+            let clickTime = Date.now();
+            let reactionTime = clickTime - (Date.now() - (gameTime - timeLeft) * 1000);
+            reactionTimes.push(reactionTime);
+            totalClicks++;
+
+            cat.src = 'suprised-cat.jpg'; // Corrected file format
+            cat.dataset.clicked = "true"; // Mark cat as clicked (prevents further clicks)
+            cat.onclick = null; // Disable clicking again
+
+            setTimeout(() => {
+                cat.remove();
+                if (gameActive) spawnCat();
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+
+            let gameBox = document.querySelector('.game-container');
+            gameBox.innerHTML = ""; // Clear all cats
+
+            let avgReaction = reactionTimes.length > 0
+                ? (reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length).toFixed(2)
+                : "N/A";
+
+            document.getElementById("result").innerText = 
+                `Game Over! Total Clicks: ${totalClicks}, Avg Reaction Time: ${avgReaction} ms`;
+        }
+    </script>
+</head>
+<body>
+    <h2>Aim Training Game</h2>
+    <p>Select the game duration and press "Start" to begin.</p>
+
+    <div>
+        <button class="button" onclick="setGameTime(10)">10s</button>
+        <button class="button" onclick="setGameTime(15)">15s</button>
+        <button class="button" onclick="setGameTime(30)">30s</button>
+        <button class="button" onclick="setGameTime(60)">1m</button>
+    </div>
+    <p id="timer-display">Time Left: 30s</p>
+
+    <div class="game-container"></div>
+
+    <button class="button" onclick="startGame()">Start Game</button>
+    <p id="result"></p>
+
+    <div class="bottom-panel">
+        <button class="button" onclick="location.href='Pet_Gamingfication.html'">Home</button>
+        <button class="button" onclick="location.href='reaction-time.html'">Reaction Time</button>
+        <button class="button" onclick="location.href='typewriting.html'">Typewriting Training</button>
+        <button class="button" onclick="location.href='memorization.html'">Memorization</button>
+        <button class="button" onclick="location.href='exit.html'">Exit</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorization Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fbeee6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .game-container {
+            display: grid;
+            gap: 5px;
+            margin: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .box {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0;
+            background-color: gray;
+        }
+        .hidden {
+            background-color: #ddd !important;
+        }
+        .button {
+            margin: 10px;
+            padding: 12px 25px;
+            font-size: 18px;
+            background-color: #ffcc99;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #ff9966;
+        }
+        .bottom-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+        .hamster {
+            width: 150px;
+            height: 150px;
+        }
+        #sad-hamster {
+            display: none;
+        }
+    </style>
+    <script>
+        let level = 1;
+        let gridSize = 4;
+        let goldBoxes = [];
+        let clickedGoldBoxes = 0;
+        let totalGoldBoxes = 0;
+        let gameStarted = false;
+
+        function startGame() {
+            level = 1;
+            gridSize = 4;
+            document.getElementById("level-display").innerText = "Level 1";
+            gameStarted = false;
+            document.getElementById("start-btn").style.display = "block";
+            document.getElementById("game-container").innerHTML = "";
+            document.getElementById("sad-hamster").style.display = "none";
+            document.getElementById("happy-hamster").style.display = "block";
+            document.getElementById("restart-btn").style.display = "none";
+        }
+
+        function generateGrid() {
+            let gameContainer = document.getElementById("game-container");
+            gameContainer.innerHTML = "";
+            gameContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            
+            let totalBoxes = gridSize * gridSize;
+            let colors = ["red", "blue", "green", "purple", "gray"];
+            goldBoxes = [];
+            clickedGoldBoxes = 0;
+            totalGoldBoxes = 0;
+
+            let chance = 100;
+            for (let i = 0; i < totalBoxes; i++) {
+                if (Math.random() * 100 <= chance) {
+                    goldBoxes.push(true);
+                    chance -= 10;
+                    totalGoldBoxes++;
+                } else {
+                    goldBoxes.push(false);
+                }
+            }
+
+            if (totalGoldBoxes === 0) {
+                let randomIndex = Math.floor(Math.random() * totalBoxes);
+                goldBoxes[randomIndex] = true;
+                totalGoldBoxes = 1;
+            }
+
+            goldBoxes.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < totalBoxes; i++) {
+                let box = document.createElement("div");
+                box.classList.add("box");
+                let color = goldBoxes[i] ? "gold" : colors[Math.floor(Math.random() * colors.length)];
+                box.style.backgroundColor = color;
+                box.dataset.isGold = goldBoxes[i];
+
+                box.onclick = function() {
+                    if (!gameStarted) return;
+
+                    if (box.dataset.isGold === "true") {
+                        box.style.backgroundColor = "gold";
+                        box.dataset.clicked = "true";
+                        clickedGoldBoxes++;
+
+                        if (clickedGoldBoxes === totalGoldBoxes) {
+                            nextLevel();
+                        }
+                    } else {
+                        failGame();
+                    }
+                };
+
+                gameContainer.appendChild(box);
+            }
+
+            document.getElementById("start-btn").style.display = "none";
+            document.getElementById("happy-hamster").style.display = "none";
+            setTimeout(hideColors, 2000);
+        }
+
+        function hideColors() {
+            let boxes = document.querySelectorAll(".box");
+            boxes.forEach(box => box.classList.add("hidden"));
+            gameStarted = true;
+        }
+
+        function nextLevel() {
+            if (level < 10) {
+                level++;
+                gridSize += 2;
+                document.getElementById("level-display").innerText = `Level ${level}`;
+                generateGrid();
+            } else {
+                alert("You won the game! Restarting...");
+                startGame();
+            }
+        }
+
+        function failGame() {
+            alert("Wrong choice! Restarting...");
+            document.getElementById("sad-hamster").style.display = "block";
+            document.getElementById("restart-btn").style.display = "block";
+            document.getElementById("game-container").innerHTML = "";
+        }
+    </script>
+</head>
+<body onload="startGame()">
+    <h2>Memorization Game</h2>
+    <p>Memorize where the gold boxes are. After they disappear, click **only** the gold ones!</p>
+    <p><strong>Current Level:</strong> <span id="level-display">1</span></p>
+
+    <!-- Smiling Hamster before game starts -->
+    <img id="happy-hamster" class="hamster" src="happy-hamster.jpg" alt="Happy Hamster">
+    
+    <!-- Sad Hamster after failure -->
+    <img id="sad-hamster" class="hamster" src="sad-hamster.webp" alt="Sad Hamster">
+
+    <button id="start-btn" class="button" onclick="generateGrid()">Start Game</button>
+    <button id="restart-btn" class="button" onclick="startGame()" style="display:none;">Restart</button>
+
+    <div id="game-container" class="game-container"></div>
+
+    <div class="bottom-panel">
+        <button class="button" onclick="location.href='Pet_Gamingfication.html'">Home</button>
+        <button class="button" onclick="location.href='reaction-time.html'">Reaction Time</button>
+        <button class="button" onclick="location.href='aim-train.html'">Aim Train</button>
+        <button class="button" onclick="location.href='typewriting.html'">Typewriting Training</button>
+        <button class="button" onclick="location.href='exit.html'">Exit</button>
+    </div>
+</body>
+</html>
+

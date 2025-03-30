@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Time Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fbeee6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            margin: 10px;
+        }
+        .dog-image {
+            width: 200px;
+            height: 200px;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #ffcc99;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #ff9966;
+        }
+        .bottom-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        let startTime;
+        let canClick = false; // Prevents early clicks
+
+        function startReactionTest() {
+            let dogImage = document.getElementById('dog-image');
+            let reactionButton = document.getElementById('reaction-button');
+            let resultText = document.getElementById('result');
+            
+            // Reset to sad dog at the start
+            dogImage.src = 'sad-dog.webp';
+            reactionButton.disabled = false; // Allow button to be clickable
+            resultText.innerText = "Wait for the dog to smile...";
+            canClick = false; // Prevent early clicks
+            
+            setTimeout(() => {
+                dogImage.src = 'happy-dog.jpg';
+                startTime = Date.now();
+                canClick = true; // Allow clicking now
+            }, Math.random() * 3000 + 2000);
+        }
+
+        function stopReactionTest() {
+            if (!canClick) {
+                document.getElementById('result').innerText = "You clicked too early! Try again.";
+                document.getElementById('reaction-button').disabled = true;
+                return;
+            }
+            let reactionTime = Date.now() - startTime;
+            document.getElementById('result').innerText = `Your reaction time: ${reactionTime} ms`;
+            document.getElementById('reaction-button').disabled = true;
+        }
+    </script>
+</head>
+<body>
+    <div class="panel">
+        <h2>Reaction Time Test</h2>
+        <p>Welcome! Click "Start" to begin. When the sad dog turns happy, click the button as quickly as you can!</p>
+        <!-- Sad dog appears first -->
+        <img id="dog-image" class="dog-image" src="sad-dog.webp" alt="Sad Dog">
+        <br>
+        <button class="button" onclick="startReactionTest()">Start Test</button>
+        <button id="reaction-button" class="button" onclick="stopReactionTest()">Click when the dog smiles!</button>
+        <p id="result"></p>
+    </div>
+    <div class="bottom-panel">
+        <button class="button" onclick="location.href='Pet_gamingfication.html'">Home</button>
+        <button class="button" onclick="location.href='aim-train.html'">Aim Train</button>
+        <button class="button" onclick="location.href='typewriting.html'">Typewriting Training</button>
+        <button class="button" onclick="location.href='memorization.html'">Memorization</button>
+        <button class="button" onclick="location.href='exit.html'">Exit</button>
+    </div>
+</body>
+</html>
